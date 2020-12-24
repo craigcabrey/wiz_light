@@ -1,0 +1,1 @@
+DOMAIN = "wiz_light"

@@ -20,9 +20,13 @@ from homeassistant.components.light import (
     SUPPORT_EFFECT,
     LightEntity,
 )
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST, CONF_NAME
+from homeassistant.core import HomeAssistant
 import homeassistant.helpers.config_validation as cv
 import homeassistant.util.color as color_utils
+
+from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -48,6 +52,16 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
 
     # Add devices
     async_add_entities([WizBulb(bulb, config[CONF_NAME])])
+
+
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
+    """Setup sensors from a config entry created in the integrations UI."""
+    config = hass.data[DOMAIN][entry.entry_id]
+    bulb = wizlight(config[CONF_HOST])
+
+    async_add_entities([WizBulb(bulb, config[CONF_NAME])], update_before_add=True)
+
+    return True
 
 
 class WizBulb(LightEntity):
